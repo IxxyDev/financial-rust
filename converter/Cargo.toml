@@ -1,6 +1,12 @@
 [package]
 name = "converter"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+
+[[bin]]
+name = "ypbank_converter"
+path = "src/main.rs"
 
 [dependencies]
+parser = { path = "../parser" }
+clap = { version = "4", features = ["derive"] }

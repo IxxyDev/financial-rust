@@ -1,0 +1,46 @@
+Account: ACC123456
+
+ID: TX001
+Date: 2024-01-15
+Type: Credit
+Amount: 5000.00 USD
+Description: Salary payment
+Account: ACC123456
+Counterparty: Employer Corp
+Category: Salary
+---
+ID: TX002
+Date: 2024-01-16
+Type: Debit
+Amount: 150.50 USD
+Description: Grocery shopping
+Account: ACC123456
+Counterparty: SuperMart
+Category: Food
+---
+ID: TX003
+Date: 2024-01-17
+Type: Debit
+Amount: 45.00 USD
+Description: Coffee shop
+Account: ACC123456
+Counterparty: Starbucks
+Category: Food
+---
+ID: TX004
+Date: 2024-01-18
+Type: Debit
+Amount: 1200.00 USD
+Description: Rent payment
+Account: ACC123456
+Counterparty: Property Management
+Category: Housing
+---
+ID: TX005
+Date: 2024-01-20
+Type: Credit
+Amount: 200.00 USD
+Description: Freelance project
+Account: ACC123456
+Counterparty: Client Inc
+Category: Income

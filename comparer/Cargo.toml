@@ -1,6 +1,12 @@
 [package]
 name = "comparer"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+
+[[bin]]
+name = "ypbank_compare"
+path = "src/main.rs"
 
 [dependencies]
+parser = { path = "../parser" }
+clap = { version = "4", features = ["derive"] }

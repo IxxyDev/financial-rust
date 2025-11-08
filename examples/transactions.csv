@@ -1,0 +1,6 @@
+TransactionId,PostedDate,ExecutedDate,Type,Amount,Currency,Description,Account,Counterparty,Category
+TX001,2024-01-15,2024-01-15 10:30:00,Credit,5000.00,USD,Salary payment,ACC123456,Employer Corp,Salary
+TX002,2024-01-16,2024-01-16 14:20:00,Debit,150.50,USD,Grocery shopping,ACC123456,SuperMart,Food
+TX003,2024-01-17,,Debit,45.00,USD,Coffee shop,ACC123456,Starbucks,Food
+TX004,2024-01-18,2024-01-18 09:15:00,Debit,1200.00,USD,Rent payment,ACC123456,Property Management,Housing
+TX005,2024-01-20,2024-01-20 16:45:00,Credit,200.00,USD,Freelance project,ACC123456,Client Inc,Income
