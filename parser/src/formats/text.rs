@@ -105,16 +105,8 @@ pub fn parse_text<R: Read>(reader: R) -> Result<TransactionBatch> {
                     )?,
                 );
             } else if let Some(kind_str) = trimmed.strip_prefix("Type: ") {
-                tx.kind = match kind_str {
-                    "Credit" => TransactionKind::Credit,
-                    "Debit" => TransactionKind::Debit,
-                    other => {
-                        return Err(Error::parse(
-                            "Text",
-                            format!("line {}: invalid type: {}", line_num + 2, other),
-                        ))
-                    }
-                };
+                tx.kind = TransactionKind::from_str(kind_str)
+                    .map_err(|e| Error::parse("Text", format!("line {}: invalid type: {}", line_num + 2, e)))?;
             } else if let Some(amount_str) = trimmed.strip_prefix("Amount: ") {
                 let parts: Vec<&str> = amount_str.split_whitespace().collect();
                 if parts.len() != 2 {
@@ -192,11 +184,7 @@ pub fn write_text<W: Write>(batch: &TransactionBatch, writer: &mut W) -> Result<
             )?;
         }
 
-        let tx_type = match tx.kind {
-            TransactionKind::Credit => "Credit",
-            TransactionKind::Debit => "Debit",
-        };
-        writeln!(writer, "Type: {}", tx_type)?;
+        writeln!(writer, "Type: {}", tx.kind)?;
         writeln!(
             writer,
             "Amount: {} {}",

@@ -22,37 +22,30 @@ pub mod csv;
 /// in a human-readable plain text format.
 pub mod text;
 
-use std::str::FromStr;
-
 /// Supported transaction file formats.
 ///
 /// This enum represents all formats that can be used to parse
 /// and write transaction data.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(strum::EnumString, strum::Display, strum::AsRefStr)]
 #[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
+#[strum(serialize_all = "lowercase")]
 pub enum Format {
     /// Comma-separated values format
     #[cfg_attr(feature = "cli", value(name = "csv"))]
     Csv,
+
     /// Human-readable plain text format
     #[cfg_attr(feature = "cli", value(name = "text", alias = "txt"))]
+    #[strum(serialize = "text")]
+    #[strum(serialize = "txt")]
     Text,
+
     /// Compact binary format
     #[cfg_attr(feature = "cli", value(name = "binary", alias = "bin"))]
+    #[strum(serialize = "binary")]
+    #[strum(serialize = "bin")]
     Binary,
-}
-
-impl FromStr for Format {
-    type Err = crate::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "csv" => Ok(Format::Csv),
-            "text" | "txt" => Ok(Format::Text),
-            "binary" | "bin" => Ok(Format::Binary),
-            _ => Err(crate::Error::UnsupportedFormat("unknown format")),
-        }
-    }
 }
 
 impl Format {
@@ -66,11 +59,7 @@ impl Format {
     /// assert_eq!(Format::Csv.as_str(), "csv");
     /// assert_eq!(Format::Binary.as_str(), "binary");
     /// ```
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Format::Csv => "csv",
-            Format::Text => "text",
-            Format::Binary => "binary",
-        }
+    pub fn as_str(&self) -> &str {
+        self.as_ref()
     }
 }

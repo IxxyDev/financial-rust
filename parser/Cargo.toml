@@ -8,6 +8,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 rust_decimal = "1"
 thiserror = "1"
 clap = { version = "4", features = ["derive"], optional = true }
+strum = { version = "0.26", features = ["derive"] }
 
 [features]
 default = []

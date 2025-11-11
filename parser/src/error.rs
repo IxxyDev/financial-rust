@@ -19,7 +19,11 @@ pub enum Error {
 
     /// The specified format is not supported
     #[error("unsupported format: {0}")]
-    UnsupportedFormat(&'static str),
+    UnsupportedFormat(String),
+
+    /// Failed to parse format from string
+    #[error("invalid format: {0}")]
+    InvalidFormat(#[from] strum::ParseError),
 
     /// A parsing error occurred with details about what went wrong
     #[error("parse error in {format}: {message}")]

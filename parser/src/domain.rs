@@ -30,6 +30,7 @@ pub struct Money {
 
 /// The type of transaction: incoming (credit) or outgoing (debit).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(strum::EnumString, strum::Display)]
 pub enum TransactionKind {
     /// Outgoing transaction (withdrawal, payment)
     Debit,

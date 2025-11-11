@@ -85,18 +85,13 @@ pub fn write_csv<W: Write>(batch: &TransactionBatch, writer: &mut W) -> Result<(
             .map(|dt| dt.format("%Y-%m-%d %H:%M:%S").to_string())
             .unwrap_or_default();
 
-        let tx_type = match transaction.kind {
-            TransactionKind::Credit => "Credit",
-            TransactionKind::Debit => "Debit",
-        };
-
         writeln!(
             writer,
             "{},{},{},{},{},{},{},{},{},{}",
             escape_csv_field(&transaction.id),
             transaction.posted_at.format("%Y-%m-%d"),
             executed_date,
-            tx_type,
+            transaction.kind,
             transaction.amount.amount,
             escape_csv_field(&transaction.amount.currency),
             escape_csv_field(&transaction.description),
@@ -146,16 +141,8 @@ fn parse_csv_line(line: &str, line_num: usize) -> Result<Transaction> {
         )
     };
 
-    let kind = match fields[3].trim() {
-        "Credit" => TransactionKind::Credit,
-        "Debit" => TransactionKind::Debit,
-        other => {
-            return Err(Error::parse(
-                "CSV",
-                format!("line {}: invalid transaction type: {}", line_num, other),
-            ))
-        }
-    };
+    let kind = TransactionKind::from_str(fields[3].trim())
+        .map_err(|e| Error::parse("CSV", format!("line {}: invalid transaction type: {}", line_num, e)))?;
 
     let amount_value = Decimal::from_str(fields[4].trim())
         .map_err(|e| Error::parse("CSV", format!("line {}: invalid amount: {}", line_num, e)))?;
