@@ -4,6 +4,14 @@ use rust_decimal::Decimal;
 use std::io::{BufRead, BufReader, Read, Write};
 use std::str::FromStr;
 
+/// Default date used for transactions when posted_at is not yet parsed.
+/// This is a valid date (January 1, 1970) that will be replaced during parsing.
+/// Using a const ensures compile-time validation of the date.
+const DEFAULT_DATE: NaiveDate = match NaiveDate::from_ymd_opt(1970, 1, 1) {
+    Some(date) => date,
+    None => panic!("Date 01.01.1970 is valid"),
+};
+
 /// Parses transaction data from a human-readable plain text format.
 ///
 /// The text format uses key-value pairs separated by colons, with transactions
@@ -65,7 +73,7 @@ pub fn parse_text<R: Read>(reader: R) -> Result<TransactionBatch> {
             }
             current_transaction = Some(Transaction {
                 id: id.to_string(),
-                posted_at: NaiveDate::from_ymd_opt(1970, 1, 1).unwrap(),
+                posted_at: DEFAULT_DATE,
                 executed_at: None,
                 kind: TransactionKind::Debit,
                 amount: Money {
