@@ -3,8 +3,7 @@
 //! This module defines all error types that can occur during parsing
 //! and writing of financial transaction data.
 
-use std::error;
-use std::fmt;
+use thiserror::Error as ThisError;
 
 /// A specialized Result type for parser operations.
 ///
@@ -12,13 +11,18 @@ use std::fmt;
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Errors that can occur during parsing or writing of transaction data.
-#[derive(Debug)]
+#[derive(Debug, ThisError)]
 pub enum Error {
     /// An I/O error occurred while reading or writing data
-    Io(std::io::Error),
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+
     /// The specified format is not supported
+    #[error("unsupported format: {0}")]
     UnsupportedFormat(&'static str),
+
     /// A parsing error occurred with details about what went wrong
+    #[error("parse error in {format}: {message}")]
     Parse {
         /// The format that was being parsed
         format: &'static str,
@@ -47,34 +51,5 @@ impl Error {
             format,
             message: message.into(),
         }
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Error::Io(err) => write!(f, "I/O error: {err}"),
-            Error::UnsupportedFormat(fmt_name) => {
-                write!(f, "unsupported format: {fmt_name}")
-            }
-            Error::Parse { format, message } => {
-                write!(f, "parse error in {format}: {message}")
-            }
-        }
-    }
-}
-
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            Error::Io(err) => Some(err),
-            Error::UnsupportedFormat(_) | Error::Parse { .. } => None,
-        }
-    }
-}
-
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self {
-        Error::Io(err)
     }
 }

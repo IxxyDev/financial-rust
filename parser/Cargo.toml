@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 rust_decimal = "1"
+thiserror = "1"
