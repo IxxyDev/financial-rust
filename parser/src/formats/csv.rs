@@ -4,6 +4,26 @@ use rust_decimal::Decimal;
 use std::io::{BufRead, BufReader, Read, Write};
 use std::str::FromStr;
 
+/// Parses transaction data from CSV (Comma-Separated Values) format.
+///
+/// The CSV format expects a header row followed by transaction records.
+/// Each line represents one transaction with comma-separated fields.
+///
+/// # Arguments
+///
+/// * `reader` - A reader containing CSV transaction data
+///
+/// # Returns
+///
+/// Returns a [`TransactionBatch`] with all parsed transactions, or an [`Error`]
+/// if the CSV is malformed or contains invalid data.
+///
+/// # Errors
+///
+/// This function will return an error if:
+/// - The file is empty
+/// - The header is invalid
+/// - Any line contains invalid data
 pub fn parse_csv<R: Read>(reader: R) -> Result<TransactionBatch> {
     let buf_reader = BufReader::new(reader);
     let mut lines = buf_reader.lines();
@@ -35,6 +55,24 @@ pub fn parse_csv<R: Read>(reader: R) -> Result<TransactionBatch> {
     })
 }
 
+/// Writes transaction data in CSV (Comma-Separated Values) format.
+///
+/// This function outputs a header row followed by transaction records,
+/// with each field separated by commas. Fields containing special characters
+/// are properly escaped.
+///
+/// # Arguments
+///
+/// * `batch` - The transaction batch to write
+/// * `writer` - A writer to output the CSV data to
+///
+/// # Returns
+///
+/// Returns `Ok(())` on success, or an [`Error`] if writing fails.
+///
+/// # Errors
+///
+/// This function will return an error if any I/O operation fails.
 pub fn write_csv<W: Write>(batch: &TransactionBatch, writer: &mut W) -> Result<()> {
     writeln!(
         writer,

@@ -4,6 +4,27 @@ use rust_decimal::Decimal;
 use std::io::{BufRead, BufReader, Read, Write};
 use std::str::FromStr;
 
+/// Parses transaction data from a human-readable plain text format.
+///
+/// The text format uses key-value pairs separated by colons, with transactions
+/// delimited by separator lines ("---"). This format is optimized for human
+/// readability and manual editing.
+///
+/// # Arguments
+///
+/// * `reader` - A reader containing plain text transaction data
+///
+/// # Returns
+///
+/// Returns a [`TransactionBatch`] with all parsed transactions, or an [`Error`]
+/// if the text is malformed or contains invalid data.
+///
+/// # Errors
+///
+/// This function will return an error if:
+/// - The file is empty
+/// - Any field contains invalid data
+/// - Required fields are missing
 pub fn parse_text<R: Read>(reader: R) -> Result<TransactionBatch> {
     let buf_reader = BufReader::new(reader);
     let mut lines = buf_reader.lines();
@@ -123,6 +144,24 @@ pub fn parse_text<R: Read>(reader: R) -> Result<TransactionBatch> {
     })
 }
 
+/// Writes transaction data in a human-readable plain text format.
+///
+/// This function outputs transactions using key-value pairs with colons,
+/// separated by "---" delimiters. The format is designed to be easy to
+/// read and edit manually.
+///
+/// # Arguments
+///
+/// * `batch` - The transaction batch to write
+/// * `writer` - A writer to output the text data to
+///
+/// # Returns
+///
+/// Returns `Ok(())` on success, or an [`Error`] if writing fails.
+///
+/// # Errors
+///
+/// This function will return an error if any I/O operation fails.
 pub fn write_text<W: Write>(batch: &TransactionBatch, writer: &mut W) -> Result<()> {
     if let Some(account) = &batch.account_id {
         writeln!(writer, "Account: {}", account)?;

@@ -7,6 +7,27 @@ use std::str::FromStr;
 const MAGIC_NUMBER: u32 = 0x59504246;
 const VERSION: u8 = 1;
 
+/// Parses transaction data from a binary format.
+///
+/// The binary format is a compact representation that includes a magic number
+/// and version header for validation. This format is suitable for efficient
+/// storage and transmission of transaction data.
+///
+/// # Arguments
+///
+/// * `reader` - A reader containing binary transaction data
+///
+/// # Returns
+///
+/// Returns a [`TransactionBatch`] with all parsed transactions, or an [`Error`]
+/// if the data is invalid or corrupted.
+///
+/// # Errors
+///
+/// This function will return an error if:
+/// - The magic number is invalid
+/// - The version is not supported
+/// - The binary data is corrupted or incomplete
 pub fn parse_binary<R: Read>(mut reader: R) -> Result<TransactionBatch> {
     let magic = read_u32(&mut reader)?;
     if magic != MAGIC_NUMBER {
@@ -37,6 +58,23 @@ pub fn parse_binary<R: Read>(mut reader: R) -> Result<TransactionBatch> {
     })
 }
 
+/// Writes transaction data in binary format.
+///
+/// This function writes a compact binary representation of the transaction batch,
+/// including a magic number and version header for validation.
+///
+/// # Arguments
+///
+/// * `batch` - The transaction batch to write
+/// * `writer` - A writer to output the binary data to
+///
+/// # Returns
+///
+/// Returns `Ok(())` on success, or an [`Error`] if writing fails.
+///
+/// # Errors
+///
+/// This function will return an error if any I/O operation fails.
 pub fn write_binary<W: Write>(batch: &TransactionBatch, writer: &mut W) -> Result<()> {
     write_u32(writer, MAGIC_NUMBER)?;
     write_u8(writer, VERSION)?;
