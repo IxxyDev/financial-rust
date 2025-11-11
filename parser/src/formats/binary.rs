@@ -292,4 +292,69 @@ mod tests {
         let result = parse_binary(cursor);
         assert!(result.is_err());
     }
+
+    #[test]
+    fn test_binary_roundtrip() {
+        // Create comprehensive test data
+        let original_batch = TransactionBatch {
+            account_id: Some("ACC123".to_string()),
+            transactions: vec![
+                Transaction {
+                    id: "TX001".to_string(),
+                    posted_at: NaiveDate::from_ymd_opt(2024, 1, 15).unwrap(),
+                    executed_at: Some(
+                        chrono::NaiveDateTime::parse_from_str("2024-01-15 10:30:00", "%Y-%m-%d %H:%M:%S")
+                            .unwrap(),
+                    ),
+                    kind: TransactionKind::Credit,
+                    amount: Money {
+                        amount: Decimal::from_str("1000.50").unwrap(),
+                        currency: "USD".to_string(),
+                    },
+                    description: "Salary payment".to_string(),
+                    account: Some("ACC123".to_string()),
+                    counterparty: Some("Employer Inc".to_string()),
+                    category: Some("Salary".to_string()),
+                },
+                Transaction {
+                    id: "TX002".to_string(),
+                    posted_at: NaiveDate::from_ymd_opt(2024, 1, 16).unwrap(),
+                    executed_at: None,
+                    kind: TransactionKind::Debit,
+                    amount: Money {
+                        amount: Decimal::from_str("150.50").unwrap(),
+                        currency: "USD".to_string(),
+                    },
+                    description: "Regular payment".to_string(),
+                    account: Some("ACC123".to_string()),
+                    counterparty: Some("Store".to_string()),
+                    category: Some("Food".to_string()),
+                },
+            ],
+        };
+
+        // Write to binary format
+        let mut buffer = Vec::new();
+        write_binary(&original_batch, &mut buffer).unwrap();
+
+        // Read back from binary format
+        let cursor = Cursor::new(buffer);
+        let parsed_batch = parse_binary(cursor).unwrap();
+
+        // Compare
+        assert_eq!(parsed_batch.account_id, original_batch.account_id);
+        assert_eq!(parsed_batch.transactions.len(), original_batch.transactions.len());
+
+        for (original, parsed) in original_batch.transactions.iter().zip(parsed_batch.transactions.iter()) {
+            assert_eq!(parsed.id, original.id);
+            assert_eq!(parsed.posted_at, original.posted_at);
+            assert_eq!(parsed.executed_at, original.executed_at);
+            assert_eq!(parsed.kind, original.kind);
+            assert_eq!(parsed.amount, original.amount);
+            assert_eq!(parsed.description, original.description);
+            assert_eq!(parsed.account, original.account);
+            assert_eq!(parsed.counterparty, original.counterparty);
+            assert_eq!(parsed.category, original.category);
+        }
+    }
 }
