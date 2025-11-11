@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use clap::Parser as ClapParser;
 use parser::{Format, Transaction, TransactionBatch};
 use std::fs::File;
@@ -22,26 +23,29 @@ struct Args {
     format2: String,
 }
 
-fn main() {
-    if let Err(e) = run() {
-        eprintln!("Error: {}", e);
-        process::exit(1);
-    }
+fn main() -> Result<()> {
+    run()
 }
 
-fn run() -> Result<(), Box<dyn std::error::Error>> {
+fn run() -> Result<()> {
     let args = Args::parse();
 
-    let format1 = Format::from_str(&args.format1)?;
-    let format2 = Format::from_str(&args.format2)?;
+    let format1 = Format::from_str(&args.format1)
+        .context("Invalid format for file1")?;
+    let format2 = Format::from_str(&args.format2)
+        .context("Invalid format for file2")?;
 
-    let file1 = File::open(&args.file1)?;
+    let file1 = File::open(&args.file1)
+        .with_context(|| format!("Failed to open file1: {}", args.file1))?;
     let reader1 = BufReader::new(file1);
-    let batch1 = parser::parse(reader1, format1)?;
+    let batch1 = parser::parse(reader1, format1)
+        .with_context(|| format!("Failed to parse file1: {}", args.file1))?;
 
-    let file2 = File::open(&args.file2)?;
+    let file2 = File::open(&args.file2)
+        .with_context(|| format!("Failed to open file2: {}", args.file2))?;
     let reader2 = BufReader::new(file2);
-    let batch2 = parser::parse(reader2, format2)?;
+    let batch2 = parser::parse(reader2, format2)
+        .with_context(|| format!("Failed to parse file2: {}", args.file2))?;
 
     compare_batches(&batch1, &batch2, &args.file1, &args.file2)?;
 
@@ -53,7 +57,7 @@ fn compare_batches(
     batch2: &TransactionBatch,
     file1_name: &str,
     file2_name: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<()> {
     if batch1.transactions.len() != batch2.transactions.len() {
         println!(
             "The files have different number of transactions: {} vs {}",
