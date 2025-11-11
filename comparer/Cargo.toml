@@ -8,6 +8,6 @@ name = "ypbank_compare"
 path = "src/main.rs"
 
 [dependencies]
-parser = { path = "../parser" }
+parser = { path = "../parser", features = ["cli"] }
 clap = { version = "4", features = ["derive"] }
 anyhow = "1"

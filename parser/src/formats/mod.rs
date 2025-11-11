@@ -29,12 +29,16 @@ use std::str::FromStr;
 /// This enum represents all formats that can be used to parse
 /// and write transaction data.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
 pub enum Format {
     /// Comma-separated values format
+    #[cfg_attr(feature = "cli", value(name = "csv"))]
     Csv,
     /// Human-readable plain text format
+    #[cfg_attr(feature = "cli", value(name = "text", alias = "txt"))]
     Text,
     /// Compact binary format
+    #[cfg_attr(feature = "cli", value(name = "binary", alias = "bin"))]
     Binary,
 }
 

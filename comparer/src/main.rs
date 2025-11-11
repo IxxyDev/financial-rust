@@ -4,7 +4,6 @@ use parser::{Format, Transaction, TransactionBatch};
 use std::fs::File;
 use std::io::BufReader;
 use std::process;
-use std::str::FromStr;
 
 #[derive(ClapParser)]
 #[command(name = "ypbank_compare")]
@@ -13,14 +12,14 @@ struct Args {
     #[arg(long = "file1", help = "First file path")]
     file1: String,
 
-    #[arg(long = "format1", help = "First file format (csv, text, binary)")]
-    format1: String,
+    #[arg(long = "format1", help = "First file format")]
+    format1: Format,
 
     #[arg(long = "file2", help = "Second file path")]
     file2: String,
 
-    #[arg(long = "format2", help = "Second file format (csv, text, binary)")]
-    format2: String,
+    #[arg(long = "format2", help = "Second file format")]
+    format2: Format,
 }
 
 fn main() -> Result<()> {
@@ -30,21 +29,16 @@ fn main() -> Result<()> {
 fn run() -> Result<()> {
     let args = Args::parse();
 
-    let format1 = Format::from_str(&args.format1)
-        .context("Invalid format for file1")?;
-    let format2 = Format::from_str(&args.format2)
-        .context("Invalid format for file2")?;
-
     let file1 = File::open(&args.file1)
         .with_context(|| format!("Failed to open file1: {}", args.file1))?;
     let reader1 = BufReader::new(file1);
-    let batch1 = parser::parse(reader1, format1)
+    let batch1 = parser::parse(reader1, args.format1)
         .with_context(|| format!("Failed to parse file1: {}", args.file1))?;
 
     let file2 = File::open(&args.file2)
         .with_context(|| format!("Failed to open file2: {}", args.file2))?;
     let reader2 = BufReader::new(file2);
-    let batch2 = parser::parse(reader2, format2)
+    let batch2 = parser::parse(reader2, args.format2)
         .with_context(|| format!("Failed to parse file2: {}", args.file2))?;
 
     compare_batches(&batch1, &batch2, &args.file1, &args.file2)?;
