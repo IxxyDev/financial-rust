@@ -1,7 +1,10 @@
 [package]
 name = "converter"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "CLI for converting financial transaction files between CSV, text and binary formats"
 
 [[bin]]
 name = "ypbank_converter"
