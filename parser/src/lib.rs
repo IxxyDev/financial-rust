@@ -1,8 +1,10 @@
-//! Financial transaction parser library for YPBank.
+//! Financial transaction parser library.
 //!
 //! This library provides functionality to parse and write financial transactions
-//! in multiple formats: CSV, plain text, and binary. It supports reading transactions
-//! from various sources and converting between different formats.
+//! in multiple formats: CSV, plain text, and a custom binary format with magic
+//! number and version header. All I/O is built on top of [`std::io::Read`] and
+//! [`std::io::Write`], so the same code works against files, in-memory buffers,
+//! or stdin/stdout.
 //!
 //! # Examples
 //!
