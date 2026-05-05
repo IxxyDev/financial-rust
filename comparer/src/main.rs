@@ -23,10 +23,6 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-    run()
-}
-
-fn run() -> Result<()> {
     let args = Args::parse();
 
     let file1 = File::open(&args.file1)

@@ -19,10 +19,6 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-    run()
-}
-
-fn run() -> Result<()> {
     let args = Args::parse();
 
     let batch = if args.input == "-" {
